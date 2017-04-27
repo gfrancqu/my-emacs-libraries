@@ -17,16 +17,23 @@
 
 
 ;; load all libraries 
-(add-to-list 'load-path "./lisp")
-(load-library "myheader")
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/lisp/neotree")
+
+(load-library "header2")
 (load-library "web-mode")
 (load-library "browser-refresh")
 (load-library "dockerfile-mode")
 (load-library "smali-mode")
-(load-library "afternoon-theme")
+(load-library "material")
+(load-library "neotree")
 
-(unless (package-installed-p "company")
-  (package-install "company")
+;;(unless (package-installed-p "company")
+;;  (package-install "company")
+;;  )
+
+(unless (package-installed-p 'sphinx-doc)
+  (package-install 'sphinx-doc)
   )
 
 ;; auto mode depending on file type
@@ -41,9 +48,28 @@
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
+
 ;; custom shortcuts
 (global-set-key (kbd "M-s") 'browser-refresh) ; Alt+s
+(global-set-key [f8] 'neotree-toggle)
 
+;; auto header on save and on file creation
+(add-hook 'write-file-hooks 'auto-update-file-header)
+(add-hook 'emacs-lisp-mode-hook 'auto-make-header)
+(add-hook 'c-mode-common-hook   'auto-make-header)
+(add-hook 'python-mode-hook 'auto-make-header)
+(add-hook 'python-mode-hook 'company-jedi)
+(add-hook 'python-mode-hook (lambda ()
+			      (require 'sphinx-doc)
+			      (sphinx-doc-mode t)))
+
+;; completion
+(add-hook 'after-init-hook 'global-company-mode)
+(add-to-list 'company-backends 'company-jedi)
 
 ;;theme
-(load-theme 'afternoon t)
+(load-theme 'material t)
+(global-linum-mode t)
+
+;;backup files
+(setq backup-directory-alist `(("." . "~/.saves")))
